@@ -1,0 +1,58 @@
+.menu-btn {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  border: 2px solid white;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 140px;
+  text-align: center;
+}
+
+.menu-btn:hover {
+  background: white;
+  color: #1a1c2c;
+  transform: scale(1.05);
+}
+
+/* ===== THEMES (CORRECTED OVERRIDES) ===== */
+
+/* --- Retro Theme --- */
+body.theme-retro .menu-btn {
+  border: 2px solid black;
+  background: #d62828;
+  color: white;
+  border-radius: 6px;
+}
+body.theme-retro .menu-btn:hover {
+  background: #ba181b;
+  color: yellow;
+  transform: scale(1.05);
+}
+
+/* 🚀 Light Theme  */
+body.theme-light .menu-btn {
+  border: 2px solid #111;
+  background: transparent;
+  color: #111;
+}
+body.theme-light .menu-btn:hover {
+  background: #111;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* 🌑 Dark Theme */
+
+body.theme-dark .menu-btn {
+  border: 2px solid white;
+  background: transparent;
+  color: white;
+}
+body.theme-dark .menu-btn:hover {
+  background: white;
+  color: #1a1c2c;
+  transform: scale(1.05);
+}

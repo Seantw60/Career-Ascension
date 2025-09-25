@@ -1,0 +1,110 @@
+/* src/components/menu/AudioSettings.css */
+
+.settings-section {
+  padding: 5px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  border: 1px solid currentColor; 
+}
+
+.settings-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.settings-section label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 20px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;  
+  width: 60%;
+  height: 8px;
+  background: #ccc; 
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white; 
+  cursor: pointer;
+  border: 2px solid #333; 
+  margin-top: -6px; 
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: 2px solid #333;
+}
+
+/* ===== THEME OVERRIDES FOR AUDIO SLIDERS ===== */
+
+/* Light Theme */
+body.theme-light .settings-section {
+  border-color: #ccc;
+}
+body.theme-light input[type="range"] {
+  background: #ddd; /* Light track */
+}
+body.theme-light input[type="range"]::-webkit-slider-thumb {
+  background: #007bff; /* Blue thumb */
+  border-color: #007bff;
+}
+body.theme-light input[type="range"]::-moz-range-thumb {
+  background: #007bff;
+  border-color: #007bff;
+}
+
+/* Dark Theme (Using base styles as the foundation, but defining explicitly) */
+body.theme-dark .settings-section {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+body.theme-dark input[type="range"] {
+  background: #444; /* Dark track */
+}
+body.theme-dark input[type="range"]::-webkit-slider-thumb {
+  background: #fff; /* White thumb */
+  border-color: #ff6b6b; /* Red accent border */
+}
+body.theme-dark input[type="range"]::-moz-range-thumb {
+  background: #fff;
+  border-color: #ff6b6b;
+}
+
+/* Retro Theme */
+body.theme-retro .settings-section {
+  border: 2px dashed black;
+}
+body.theme-retro input[type="range"] {
+  background: black; /* Black track */
+  height: 12px; /* Thicker for retro look */
+  box-shadow: 0 0 5px #00ff00; /* Subtle glow */
+}
+body.theme-retro input[type="range"]::-webkit-slider-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 0; /* Square thumb */
+  background: #00ff00; /* Neon green thumb */
+  border: 3px solid black;
+  margin-top: -8.5px; /* Re-center the larger thumb */
+}
+body.theme-retro input[type="range"]::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 0;
+  background: #00ff00;
+  border: 3px solid black;
+}

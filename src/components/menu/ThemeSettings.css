@@ -1,0 +1,36 @@
+/* src/components/menu/ThemeSettings.css */
+.theme-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.theme-preview {
+  width: 80px;
+  height: 30px;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.theme-preview.selected {
+  border: 3px solid yellow;
+  transform: scale(1.1);
+}
+
+.theme-preview.light {
+  background: linear-gradient(180deg, #fdfdfd, #e0e0e0);
+  color: #111;
+}
+.theme-preview.dark {
+  background: linear-gradient(180deg, #2b2d42, #1a1c2c);
+  color: white;
+}
+.theme-preview.retro {
+  background: #ffd966;
+  font-family: "Courier New", monospace;
+  color: black;
+}

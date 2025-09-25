@@ -1,0 +1,108 @@
+/* src/components/menu/OptionsMenu.css */
+
+.options-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 5px;
+  transition: all 0.3s ease-in-out;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.options-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.settings-list {
+  display: block;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 20px 0;
+}
+
+.options-buttons {
+  display: flex;
+  gap: 2rem;
+}
+
+.menu-btn {
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  border: 2px solid white;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.menu-btn:hover {
+  background: white;
+  color: #1a1c2c;
+  transform: scale(1.05);
+}
+
+/* --- Light Theme Overrides --- */
+body.theme-light .options-menu {
+  background: linear-gradient(180deg, #fdfdfd, #e0e0e0);
+  color: #111;
+}
+body.theme-light .menu-btn {
+  border: 2px solid #111;
+  color: #111;
+}
+body.theme-light .menu-btn:hover {
+  background: #111;
+  color: #fff;
+}
+
+/* Theme Preview Selected State Override for Light Theme */
+body.theme-light .theme-preview.selected {
+  /* Use a strong, but theme-appropriate color like a blue or deep gray */
+  border-color: #007bff;
+}
+
+
+/* --- Dark Theme Overrides --- */
+body.theme-dark .options-menu {
+  background: linear-gradient(180deg, #2b2d42, #1a1c2c);
+  color: white;
+}
+body.theme-dark .menu-btn {
+  border: 2px solid white;
+  color: white;
+}
+body.theme-dark .menu-btn:hover {
+  background: white;
+  color: #1a1c2c;
+}
+
+/* Theme Preview Selected State Override for Dark Theme */
+body.theme-dark .theme-preview.selected {
+  /* Keep the bright yellow, or use a neon color that contrasts well on dark */
+  border-color: #ffde00; /* A brighter yellow/gold */
+}
+
+
+/* --- Retro Theme Overrides --- */
+body.theme-retro .options-menu {
+  background: #ffd966;
+  color: black;
+  font-family: "Courier New", monospace;
+}
+body.theme-retro .menu-btn {
+  border: 2px solid black;
+  background: #d62828;
+  color: white;
+}
+body.theme-retro .menu-btn:hover {
+  background: #ba181b;
+  color: yellow;
+}
+
+body.theme-retro .theme-preview.selected {
+  border-color: black;
+}
