@@ -1,0 +1,49 @@
+.playfield-container {
+  display: grid;
+  grid-template-rows: 100px 1fr 220px;
+  gap: 15px;
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(180deg, #2b2d42, #1a1c2c);
+  color: white;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+.playfield-header {
+  text-align: center;
+  padding: 20px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.job-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.event-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.skill-hand {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 5;
+}
+
+.skill-hand > div {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}

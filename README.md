@@ -60,8 +60,6 @@ Vite
 Framer Motion
  — animations
 
-classnames
- — helper for conditional CSS
 
 CSS Modules (or plain CSS) — styling
 

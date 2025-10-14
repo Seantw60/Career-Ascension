@@ -1,0 +1,39 @@
+.event-card {
+  width: 180px;
+  height: 220px;
+  background: linear-gradient(145deg, #8d99ae, #2b2d42);
+  border: 2px solid #fff;
+  border-radius: 12px;
+  color: white;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.event-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.event-description {
+  font-size: 0.9rem;
+  flex-grow: 1;
+  opacity: 0.9;
+}
+
+.event-effect {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding-top: 8px;
+}

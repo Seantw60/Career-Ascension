@@ -1,41 +1,40 @@
 // src/App.jsx
 import { useState, useEffect } from "react";
-import StartMenu from "./components/menu/Startmenu";
+import StartMenu from "./components/menu/StartMenu";
 import OptionsMenu from "./components/menu/OptionsMenu";
+import PlayField from "./components/layout/PlayField";
 import "./App.css";
 
 export default function App() {
   const [screen, setScreen] = useState("menu"); // menu | settings | play | quit
-  // Initialize theme state with a function to check localStorage immediately
+
+  // Initialize theme state
   const [theme, setTheme] = useState(() => {
     try {
       const saved = localStorage.getItem("settings");
       if (saved) {
         const parsed = JSON.parse(saved);
-        return parsed.theme || "dark"; // Default to 'dark' if theme is missing
+        return parsed.theme || "dark"; // default
       }
     } catch (e) {
       console.error("Could not load settings from localStorage", e);
     }
-    return "dark"; // Default theme
+    return "dark";
   });
 
-  // EFFECT TO SAVE SETTINGS WHEN THEME CHANGES
+  // Save theme to localStorage
   useEffect(() => {
-    const settingsToSave = {
-      theme: theme,
-      // Add other settings here later (e.g., sound volume, difficulty)
-    };
+    const settingsToSave = { theme };
     try {
       localStorage.setItem("settings", JSON.stringify(settingsToSave));
     } catch (e) {
       console.error("Could not save settings to localStorage", e);
     }
-  }, [theme]); // Re-run this effect ONLY when the theme state changes
+  }, [theme]);
 
-  // EFFECT TO APPLY THEME CLASS TO <body>
+  // Apply theme to document body
   useEffect(() => {
-    document.body.className = ""; // clear old
+    document.body.className = "";
     document.body.classList.add(`theme-${theme}`);
   }, [theme]);
 
@@ -48,15 +47,25 @@ export default function App() {
           onQuit={() => setScreen("quit")}
         />
       )}
+
       {screen === "settings" && (
         <OptionsMenu
           theme={theme}
-          setTheme={setTheme} // <--- This is where you pass the setter function
+          setTheme={setTheme}
           onBack={() => setScreen("menu")}
         />
       )}
-      {screen === "play" && <h2>Game will start here...</h2>}
-      {screen === "quit" && <h2>Thanks for playing Career Ascension!</h2>}
+
+      {screen === "play" && <PlayField />}
+
+      {screen === "quit" && (
+        <div className="quit-screen">
+          <h2>Thanks for playing <span className="highlight">Career Ascension</span>!</h2>
+          <button onClick={() => setScreen("menu")} className="return-btn">
+            Return to Menu
+          </button>
+        </div>
+      )}
     </>
   );
 }
