@@ -1,13 +1,14 @@
 html, body {
-  margin: 0; 
-  padding: 0; 
-  height: 100%; 
+  margin: 0;
+  padding: 0;
+  height: 100%;
   width: 100%;
-  overflow: hidden; 
+  box-sizing: border-box;
+  /* enforce zero vertical scrolling - app will fit into viewport */
+  overflow: hidden;
 }
 
-
-#root { 
-  height: 100%;
+#root {
+  height: 100vh;
   width: 100%;
 }

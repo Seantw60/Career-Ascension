@@ -12,6 +12,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  position: relative;
 }
 
 .skill-card h4 {
@@ -27,4 +28,31 @@
 .skill-card:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: white;
+}
+
+.skill-tooltip {
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  transform: translate(-50%, -100%);
+  max-width: 220px;
+  background: rgba(20, 20, 30, 0.95);
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  font-size: 0.85rem;
+  z-index: 30;
+  text-align: left;
+}
+
+.skill-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: rgba(20, 20, 30, 0.95) transparent transparent transparent;
 }

@@ -1,0 +1,26 @@
+.ui-tooltip {
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  transform: translate(-50%, -100%);
+  max-width: 260px;
+  background: rgba(20, 20, 30, 0.98);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  font-size: 0.9rem;
+  z-index: 60;
+  text-align: left;
+}
+
+.ui-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: rgba(20, 20, 30, 0.98) transparent transparent transparent;
+}

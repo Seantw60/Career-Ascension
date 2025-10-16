@@ -1,15 +1,13 @@
 .deck-container {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  width: 90px;
-  height: 130px;
+  width: 120px;
+  height: 120px;
+  margin: 0;
   border-radius: 8px;
   background: linear-gradient(145deg, #2b2d42, #1a1c2c);
-  border: 2px solid white;
+  border: 1px solid rgba(255,255,255,0.12);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -17,8 +15,8 @@
 }
 
 .deck-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
 }
 
 .deck-card-back {
@@ -31,7 +29,7 @@
     #555 10px,
     #555 20px
   );
-  border: 1px solid white;
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 6px;
   margin-bottom: 8px;
 }

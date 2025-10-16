@@ -4,16 +4,8 @@ import AudioSettings from "./AudioSettings";
 import ThemeSettings from "./ThemeSettings";
 import "./OptionsMenu.css";
 
-export default function OptionsMenu({ onBack, theme, setTheme }) {
-  const [audio, setAudio] = useState({
-    master: 50,
-    music: 50,
-    sfx: 50,
-  });
-
-
+export default function OptionsMenu({ onBack, theme, setTheme, audio, setAudio }) {
   const handleSave = () => {
-    
     alert("Settings Saved!");
     onBack();
   };

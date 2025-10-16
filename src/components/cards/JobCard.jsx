@@ -1,37 +1,63 @@
-// src/components/cards/JobCard.jsx
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { jobsData } from "../../data/data";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import "./styles/JobCard.css";
 
-export default function JobCard({ id }) {
-  const job = jobsData[id];
-  const [hp, setHp] = useState(job.hp);
+export default function JobCard({
+  title = "Unknown Job",
+  hp = 10,
+  maxHp = 10,
+  onDefeat = () => {},
+}) {
   const [isHit, setIsHit] = useState(false);
 
-  const takeDamage = (amount) => {
-    setIsHit(true);
-    setHp((prev) => Math.max(prev - amount, 0));
-    setTimeout(() => setIsHit(false), 200);
-  };
+  useEffect(() => {
+    if (hp <= 0) {
+      onDefeat(title);
+    }
+  }, [hp]);
 
-  const hpPercent = (hp / job.maxHp) * 100;
+  // flash when incoming damage is applied (basic heuristic)
+  useEffect(() => {
+    if (hp < maxHp) {
+      setIsHit(true);
+      const t = setTimeout(() => setIsHit(false), 200);
+      return () => clearTimeout(t);
+    }
+  }, [hp]);
+
+  const hpPercent = (hp / maxHp) * 100;
 
   return (
     <motion.div
       className={`job-card ${isHit ? "hit" : ""}`}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.3 }}
     >
-      <h3>{job.title}</h3>
-      <p className="tier">{job.tier}</p>
+      <h3>{title}</h3>
+
       <div className="hp-bar">
-        <div className="hp-fill" style={{ width: `${hpPercent}%` }} />
+        <div
+          className="hp-fill"
+          style={{ width: `${hpPercent}%` }}
+        />
       </div>
-      <p className="hp-text">HP: {hp} / {job.maxHp}</p>
-      <p className="skills-list">
-        <strong>Skills:</strong> {job.skills.join(", ")}
+
+      <p>
+        HP: {hp} / {maxHp}
       </p>
+
+      <AnimatePresence>
+        {isHit && (
+          <motion.div
+            className="hit-flash"
+            initial={{ opacity: 0.7 }}
+            animate={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

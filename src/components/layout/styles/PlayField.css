@@ -1,7 +1,15 @@
+/* src/components/layout/styles/PlayField.css */
+
 .playfield-container {
   display: grid;
-  grid-template-rows: 100px 1fr 220px;
-  gap: 15px;
+  grid-template-areas:
+    "header header header"
+    "left main sidebar"
+    "left skills skills";
+  grid-template-columns: 280px 1fr 260px;
+  /* header / main / skills rows exactly sized to the viewport to avoid vertical scrolling */
+  grid-template-rows: 80px calc(100vh - 80px - 180px) 180px;
+  gap: 12px;
   height: 100vh;
   width: 100%;
   background: linear-gradient(180deg, #2b2d42, #1a1c2c);
@@ -9,41 +17,128 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
   position: relative;
+  padding: 10px;
 }
 
+/* ---------- HEADER ---------- */
 .playfield-header {
+  grid-area: header;
   text-align: center;
   padding: 20px;
   border-bottom: 2px solid rgba(255, 255, 255, 0.15);
 }
 
-.job-area {
+.playfield-header h2 {
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+}
+
+.playfield-header p {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+/* ---------- DECK AREA ---------- */
+.left-area {
+  grid-area: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-right: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+/* ---------- MAIN PLAY AREA ---------- */
+.mainplay-area {
+  grid-area: main;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
   padding: 20px;
 }
 
-.event-area {
+.job-event-stack {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  padding: 10px;
+  gap: 25px;
 }
 
-.skill-hand {
+/* ---------- SIDEBAR (TIMER + SCOREBOARD) ---------- */
+.sidebar-area {
+  grid-area: sidebar;
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   gap: 20px;
-  padding: 25px;
+  padding: 15px;
   background: rgba(255, 255, 255, 0.05);
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.scoreboard-placeholder {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+.scoreboard-placeholder h4 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.scoreboard-placeholder p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* ---------- SKILL HAND ---------- */
+.skill-hand {
+  grid-area: skills;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 22px;
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 2px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.35);
   position: relative;
   z-index: 5;
+  border-radius: 10px 10px 0 0;
 }
 
 .skill-hand > div {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ---------- GAME OVER SCREEN ---------- */
+.game-over-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(180deg, #1a1c2c, #111320);
+  color: #fff;
+  text-align: center;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.game-over-screen h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.game-over-screen p {
+  font-size: 1.2rem;
+  opacity: 0.85;
 }

@@ -32,6 +32,32 @@ export default function App() {
     }
   }, [theme]);
 
+  // audio settings
+  const [audio, setAudio] = useState(() => {
+    try {
+      const saved = localStorage.getItem("settings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.audio || { master: 50, music: 50, sfx: 50 };
+      }
+    } catch (e) {
+      console.error("Could not load audio settings", e);
+    }
+    return { master: 50, music: 50, sfx: 50 };
+  });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("settings");
+      const parsed = saved ? JSON.parse(saved) : {};
+      parsed.audio = audio;
+      parsed.theme = theme;
+      localStorage.setItem("settings", JSON.stringify(parsed));
+    } catch (e) {
+      console.error("Could not save settings to localStorage", e);
+    }
+  }, [audio, theme]);
+
   // Apply theme to document body
   useEffect(() => {
     document.body.className = "";
@@ -52,6 +78,8 @@ export default function App() {
         <OptionsMenu
           theme={theme}
           setTheme={setTheme}
+          audio={audio}
+          setAudio={setAudio}
           onBack={() => setScreen("menu")}
         />
       )}
