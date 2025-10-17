@@ -1,14 +1,23 @@
 import { useState, useEffect } from "react";
 import "./styles/Timer.css";
 
-export default function Timer({ duration = 30 }) {
+export default function Timer({ duration = 30, onExpire = () => {} }) {
   const [timeLeft, setTimeLeft] = useState(duration);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+      // call once when expired
+      onExpire();
+      return;
+    }
     const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timeLeft, onExpire]);
+
+  useEffect(() => {
+    // reset when duration prop changes
+    setTimeLeft(duration);
+  }, [duration]);
 
   return (
     <div className="timer-container">

@@ -132,7 +132,7 @@ export default function PlayField() {
 
       {/* RIGHT SIDE — Timer + Scoreboard */}
       <aside className="sidebar-area">
-        <Timer onExpire={() => dispatch({ type: "TIMEOUT" })} />
+        <Timer key={currentJobIndex} duration={30} onExpire={() => dispatch({ type: "TIMEOUT" })} />
         <ScoreBoard />
       </aside>
 

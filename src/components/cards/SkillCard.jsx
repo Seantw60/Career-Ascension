@@ -15,7 +15,7 @@ export default function SkillCard({
 }) {
   const handleUse = () => {
     if (points <= 0 || (cooldown || 0) > 0) return;
-    onUse(skillId);
+    onUse();
   };
 
   const [showTooltip, setShowTooltip] = useState(false);
