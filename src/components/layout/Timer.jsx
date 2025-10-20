@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./styles/Timer.css";
 
-export default function Timer({ duration = 30, onExpire = () => {} }) {
+export default function Timer({ duration = 30, onExpire = () => {}, resetKey }) {
   const [timeLeft, setTimeLeft] = useState(duration);
 
   useEffect(() => {
@@ -15,9 +15,13 @@ export default function Timer({ duration = 30, onExpire = () => {} }) {
   }, [timeLeft, onExpire]);
 
   useEffect(() => {
-    // reset when duration prop changes
+    // reset when duration prop changes or when resetKey changes (new job)
     setTimeLeft(duration);
   }, [duration]);
+
+  useEffect(() => {
+    if (typeof resetKey !== "undefined") setTimeLeft(duration);
+  }, [resetKey, duration]);
 
   return (
     <div className="timer-container">

@@ -9,6 +9,7 @@ import Deck from "./Deck";
 import Timer from "./Timer";
 import TurnLog from "./TurnLog";
 import ScoreBoard from "./ScoreBoard";
+import "../common/MenuButton.css";
 import "./styles/PlayField.css";
 
 export default function PlayField() {
@@ -27,6 +28,7 @@ export default function PlayField() {
     score,
     jobsCleared,
     logs,
+    restartGame,
     dispatch,
   } = useGame();
 
@@ -48,15 +50,23 @@ export default function PlayField() {
     }
   }, [currentJob?.hp]);
 
+  const allCleared = jobsCleared >= jobs.length || currentJobIndex >= jobs.length;
+
+  if (allCleared)
+    return (
+      <motion.div className="game-over-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <h2>🎉 Game Success!</h2>
+        <p>You cleared all available jobs. Final score: {score}.</p>
+        <button className="menu-btn" onClick={() => restartGame()}>Retry</button>
+      </motion.div>
+    );
+
   if (gameOver)
     return (
-      <motion.div
-        className="game-over-screen"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <h2>🎉 Career Ascension Complete!</h2>
-        <p>You cleared all jobs with a score of {score}.</p>
+      <motion.div className="game-over-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <h2>Game Over</h2>
+        <p>Your score: {score}</p>
+        <button className="menu-btn" onClick={() => restartGame()}>Retry</button>
       </motion.div>
     );
 
@@ -67,23 +77,7 @@ export default function PlayField() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-      {/* HEADER */}
-      <header className="playfield-header">
-        <motion.h2
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-        >
-          Career Ascension
-        </motion.h2>
-        <motion.p
-          initial={{ y: -10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
-          Battle through careers using your skills!
-        </motion.p>
-      </header>
+      
 
       {/* LEFT SIDE — Turn Log occupies the entire left column */}
       <section className="left-area">
@@ -96,7 +90,7 @@ export default function PlayField() {
           {/* Event Card */}
           {currentEvent && (
             <motion.div
-              key={currentEvent.id}
+              key={`event-${currentEvent.id}`}
               initial={{ y: -10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5 }}
@@ -108,7 +102,7 @@ export default function PlayField() {
           {/* Job Card */}
           {currentJob && (
             <motion.div
-              key={currentJob.id}
+              key={`job-${currentJob.id}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 200 }}
@@ -118,6 +112,7 @@ export default function PlayField() {
                 hp={currentJob.hp}
                 maxHp={currentJob.maxHp}
                 tier={currentJob.tier}
+                description={currentJob.description}
                 onDefeat={() => {
                   // log and advance
                   triggerEvent(events[Math.floor(Math.random() * events.length)]);
@@ -132,7 +127,7 @@ export default function PlayField() {
 
       {/* RIGHT SIDE — Timer + Scoreboard */}
       <aside className="sidebar-area">
-        <Timer key={currentJobIndex} duration={30} onExpire={() => dispatch({ type: "TIMEOUT" })} />
+  <Timer key={`timer-${currentJobIndex}`} duration={30} resetKey={currentJobIndex} onExpire={() => dispatch({ type: "TIMEOUT" })} />
         <ScoreBoard />
       </aside>
 

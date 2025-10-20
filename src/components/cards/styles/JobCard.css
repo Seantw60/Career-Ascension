@@ -66,3 +66,24 @@
     transform: scale(1);
   }
 }
+
+.critical-flare {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffeb3b;
+  font-weight: bold;
+  font-size: 1.6rem;
+  text-shadow: 0 0 10px #ff5722, 0 0 20px #ff9800;
+  animation: flarePulse 1s ease-out forwards;
+  pointer-events: none;
+  z-index: 50;
+}
+
+@keyframes flarePulse {
+  0% { opacity: 0; transform: translate(-50%, -20px) scale(0.8); }
+  40% { opacity: 1; transform: translate(-50%, 0) scale(1.2); }
+  100% { opacity: 0; transform: translate(-50%, -10px) scale(1); }
+}
+

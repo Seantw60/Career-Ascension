@@ -13,6 +13,7 @@ const initialState = {
   skillCooldowns: {},
   turn: 0,
   gameOver: false,
+  critical: false,
   // gameplay counters
   score: 0,
   jobsCleared: 0,
@@ -30,95 +31,120 @@ const initialState = {
 function gameReducer(state, action) {
   switch (action.type) {
     case "USE_SKILL": {
-      const { instanceId } = action.payload;
-      const job = state.jobs[state.currentJobIndex];
-      if (!job) return state;
+  const { instanceId } = action.payload;
+  const job = state.jobs[state.currentJobIndex];
+  if (!job) return state;
 
-      // find instance in hand
-      const hand = state.hand.map((c) => ({ ...c }));
-      const idx = hand.findIndex((c) => c.instanceId === instanceId);
-      if (idx === -1) return state;
+  // find instance in hand
+  const hand = state.hand.map((c) => ({ ...c }));
+  const idx = hand.findIndex((c) => c.instanceId === instanceId);
+  if (idx === -1) return state;
 
-      const instance = hand[idx];
-      const skillDef = state.skills.find((s) => s.id === instance.id);
-      if (!skillDef) return state;
+  const instance = hand[idx];
+  const skillDef = state.skills.find((s) => s.id === instance.id);
+  if (!skillDef) return state;
 
-      // check cooldown for skillDef.id
-      const onCooldown = (state.skillCooldowns[skillDef.id] || 0) > 0;
-      if (onCooldown || instance.uses <= 0 || job.hp <= 0) return state;
+  // check cooldown for skillDef.id
+  const onCooldown = (state.skillCooldowns[skillDef.id] || 0) > 0;
+  if (onCooldown || instance.uses <= 0 || job.hp <= 0) return state;
 
-      // apply damage
-      const newHp = Math.max(job.hp - skillDef.power, 0);
-      const updatedJobs = state.jobs.map((j, i) => (i === state.currentJobIndex ? { ...j, hp: newHp } : j));
+  // 🔥 --- CRITICAL HIT CHECK ---
+  const isCritical = job.skills?.includes(skillDef.name);
+  const damage = isCritical ? Math.ceil(skillDef.power * 2.5) : skillDef.power;
 
-      // decrement uses for this instance
-      hand[idx].uses = Math.max(0, hand[idx].uses - 1);
+  // apply damage
+  const newHp = Math.max(job.hp - damage, 0);
+  const updatedJobs = state.jobs.map((j, i) =>
+    i === state.currentJobIndex ? { ...j, hp: newHp } : j
+  );
 
-      // if uses are 0 -> move to discard and remove from hand
-      const discard = [...state.discard];
-      let newHand = hand;
-      if (hand[idx].uses === 0) {
-        const [removed] = newHand.splice(idx, 1);
-        discard.push(removed.id);
-      }
+  // decrement uses for this instance
+  hand[idx].uses = Math.max(0, hand[idx].uses - 1);
 
-      // start cooldown for skill definition
-      const newCooldowns = { ...state.skillCooldowns, [skillDef.id]: skillDef.cooldown };
+  // if uses are 0 -> move to discard and remove from hand
+  const discard = [...state.discard];
+  let newHand = hand;
+  let removedInstance = false;
+  if (hand[idx].uses === 0) {
+    const [removed] = newHand.splice(idx, 1);
+    discard.push(removed.id);
+    removedInstance = true;
+  }
 
-      // draw one card automatically if possible
-      let deck = [...state.deck];
-      let nextInstanceId = state.nextInstanceId;
-      if (newHand.length < 5) {
-        if (deck.length === 0 && discard.length > 0) {
-          deck = shuffle(discard);
-          discard.length = 0;
-        }
-        if (deck.length > 0) {
-          const nextId = deck.shift();
-          const skillDef2 = state.skills.find((s) => s.id === nextId);
-          const uses = skillDef2 ? Math.max(0, skillDef2.points) : 1;
-          newHand.push({ instanceId: nextInstanceId++, id: nextId, uses });
-        }
-      }
+  // start cooldown for skill definition
+  const newCooldowns = {
+    ...state.skillCooldowns,
+    [skillDef.id]: skillDef.cooldown,
+  };
 
-      // logging
-      const logEntry = `Used ${skillDef.name} on ${job.title} for ${skillDef.power} damage.`;
-
-      // if job defeated, award points
-      let nextScore = state.score;
-      let nextJobsCleared = state.jobsCleared;
-      if (newHp <= 0) {
-        nextJobsCleared = state.jobsCleared + 1;
-        nextScore = state.score + 10; // simple scoring rule
-      }
-
-      // loss condition: if deck empty and hand empty after this action
-      const willDeckEmpty = deck.length === 0;
-      const willHandEmpty = newHand.length === 0;
-      const gameOver = willDeckEmpty && willHandEmpty && !(
-        newHp <= 0 && state.currentJobIndex < state.jobs.length - 1
-      );
-
-      return {
-        ...state,
-        jobs: updatedJobs,
-        hand: newHand,
-        deck,
-        discard,
-        skillCooldowns: newCooldowns,
-        turn: state.turn + 1,
-        score: nextScore,
-        jobsCleared: nextJobsCleared,
-        gameOver,
-        logs: [...state.logs, logEntry].slice(-50),
-        nextInstanceId,
-      };
+  // draw one card automatically only if we removed a card (replacement)
+  let deck = [...state.deck];
+  let nextInstanceId = state.nextInstanceId;
+  if (removedInstance && newHand.length < 5) {
+    if (deck.length === 0 && discard.length > 0) {
+      deck = shuffle(discard);
+      discard.length = 0;
     }
+    if (deck.length > 0) {
+      // prefer a card not already in hand
+      const handIds = newHand.map((h) => h.id);
+      let pickIndex = deck.findIndex((id) => !handIds.includes(id));
+      let nextId;
+      if (pickIndex === -1) nextId = deck.shift();
+      else nextId = deck.splice(pickIndex, 1)[0];
+      const skillDef2 = state.skills.find((s) => s.id === nextId);
+      const uses = skillDef2 ? Math.max(0, skillDef2.points) : 1;
+      newHand.push({ instanceId: nextInstanceId++, id: nextId, uses });
+    }
+  }
+
+  // logging
+  const logEntry = isCritical
+    ? `💥 CRITICAL! Used ${skillDef.name} on ${job.title} for ${damage} damage.`
+    : `Used ${skillDef.name} on ${job.title} for ${damage} damage.`;
+
+  // if job defeated, award points
+  let nextScore = state.score;
+  let nextJobsCleared = state.jobsCleared;
+  if (newHp <= 0) {
+    nextJobsCleared = state.jobsCleared + 1;
+    nextScore = state.score + 10; // simple scoring rule
+  }
+
+  // Determine if any playable cards remain
+  const hasPlayableInHand = newHand.some((h) => h.uses > 0);
+  const hasPlayableInPile = (pile) =>
+    pile.some((id) => {
+      const def = state.skills.find((s) => s.id === id);
+      return def && def.points > 0;
+    });
+
+  const playableAvailable =
+    hasPlayableInHand || hasPlayableInPile(deck) || hasPlayableInPile(discard);
+
+  return {
+    ...state,
+    jobs: updatedJobs,
+    hand: newHand,
+    deck,
+    discard,
+    skillCooldowns: newCooldowns,
+    turn: state.turn + 1,
+    score: nextScore,
+    jobsCleared: nextJobsCleared,
+    gameOver: !playableAvailable,
+    logs: [...state.logs, logEntry].slice(-50),
+    nextInstanceId,
+    // 🟡 optional: you can store critical state here if you want flare animation
+    lastCritical: isCritical,
+  };
+}
+
 
     case "NEXT_JOB": {
       const next = state.currentJobIndex + 1;
-      if (next >= state.jobs.length)
-        return { ...state, gameOver: true };
+      // If no more jobs, keep current index and clear event (do not trigger gameOver here).
+      if (next >= state.jobs.length) return { ...state, currentEvent: null };
       return { ...state, currentJobIndex: next, currentEvent: null };
     }
 
@@ -137,7 +163,12 @@ function gameReducer(state, action) {
           discard = [];
         }
         if (deck.length === 0) break;
-        const cardId = deck.shift();
+        // prefer drawing a card not already in hand
+        const handIds = hand.map((h) => h.id);
+        let pickIndex = deck.findIndex((id) => !handIds.includes(id));
+        let cardId;
+        if (pickIndex === -1) cardId = deck.shift();
+        else cardId = deck.splice(pickIndex, 1)[0];
         // find default points for this skill
         const skillDef = state.skills.find((s) => s.id === cardId);
         const uses = skillDef ? Math.max(0, skillDef.points) : 1;
@@ -172,32 +203,77 @@ function gameReducer(state, action) {
       const applyEffect = (effect) => {
         switch (effect) {
           case "drawSkill": {
-            // restore 1 point to a random skill
-            const idx = Math.floor(Math.random() * newState.skills.length);
-            newState = {
-              ...newState,
-              skills: newState.skills.map((s, i) => (i === idx ? { ...s, points: s.points + 1 } : s)),
-              logs: [...newState.logs, `Gained +1 point to ${newState.skills[idx].name}`].slice(-50),
-            };
+            // draw one card into hand (respecting hand limit); reshuffle discard if needed
+            let deck = [...newState.deck];
+            let discard = [...newState.discard];
+            let hand = [...newState.hand];
+            let nextInstanceId = newState.nextInstanceId;
+            const handLimit = 5;
+            if (hand.length < handLimit) {
+              if (deck.length === 0 && discard.length > 0) {
+                deck = shuffle(discard);
+                discard = [];
+              }
+              if (deck.length > 0) {
+                  // prefer a card not already in hand
+                  const handIds = hand.map((h) => h.id);
+                  let pickIndex = deck.findIndex((id) => !handIds.includes(id));
+                  let cardId;
+                  if (pickIndex === -1) cardId = deck.shift();
+                  else cardId = deck.splice(pickIndex, 1)[0];
+                const skillDef = newState.skills.find((s) => s.id === cardId);
+                const uses = skillDef ? Math.max(0, skillDef.points) : 1;
+                hand.push({ instanceId: nextInstanceId++, id: cardId, uses });
+                newState = {
+                  ...newState,
+                  deck,
+                  discard,
+                  hand,
+                  nextInstanceId,
+                  logs: [...newState.logs, `Event drew ${skillDef ? skillDef.name : cardId}`].slice(-50),
+                };
+              }
+            }
             break;
           }
           case "swapSkill": {
-            // shuffle skills order as a simple swap
-            const a = 0;
-            const b = Math.floor(Math.random() * newState.skills.length);
-            const skillsCopy = [...newState.skills];
-            const tmp = skillsCopy[a];
-            skillsCopy[a] = skillsCopy[b];
-            skillsCopy[b] = tmp;
-            newState = { ...newState, skills: skillsCopy, logs: [...newState.logs, `Swapped skills positions`].slice(-50) };
+            // swap a random hand instance with the top of deck (if possible)
+            let deck = [...newState.deck];
+            let hand = [...newState.hand];
+            let discard = [...newState.discard];
+            if (hand.length > 0 && (deck.length > 0 || discard.length > 0)) {
+              if (deck.length === 0 && discard.length > 0) {
+                deck = shuffle(discard);
+                discard = [];
+              }
+              if (deck.length > 0) {
+                const handIdx = Math.floor(Math.random() * hand.length);
+                const newCardId = deck.shift();
+                const old = hand[handIdx];
+                // put old card into discard and replace with new instance
+                discard.push(old.id);
+                const skillDef = newState.skills.find((s) => s.id === newCardId);
+                const uses = skillDef ? Math.max(0, skillDef.points) : 1;
+                hand[handIdx] = { instanceId: newState.nextInstanceId, id: newCardId, uses };
+                newState = {
+                  ...newState,
+                  deck,
+                  discard,
+                  hand,
+                  nextInstanceId: newState.nextInstanceId + 1,
+                  logs: [...newState.logs, `Event swapped a card in hand`].slice(-50),
+                };
+              }
+            }
             break;
           }
           case "loseSkill": {
             const idx = Math.floor(Math.random() * newState.skills.length);
+            const target = newState.skills[idx];
             newState = {
               ...newState,
               skills: newState.skills.map((s, i) => (i === idx ? { ...s, points: Math.max(0, s.points - 1) } : s)),
-              logs: [...newState.logs, `Lost 1 point from ${newState.skills[idx].name}`].slice(-50),
+              logs: [...newState.logs, `Lost 1 point from ${target.name}`].slice(-50),
             };
             break;
           }
@@ -222,6 +298,9 @@ function gameReducer(state, action) {
     case "END_GAME":
       return { ...state, gameOver: true };
 
+    case "RESTART":
+      return createInitialState();
+
     case "TIMEOUT": {
       // player failed the current job due to timeout -> deduct points, advance to next job and add a log
       const current = state.jobs[state.currentJobIndex];
@@ -229,13 +308,38 @@ function gameReducer(state, action) {
       const penalty = 5; // points lost on timeout
       const next = state.currentJobIndex + 1;
       const nextState = { ...state, score: Math.max(0, state.score - penalty), logs: [...state.logs, log, `- ${penalty} points`].slice(-50) };
-      if (next >= state.jobs.length) return { ...nextState, gameOver: true };
-      return { ...nextState, currentJobIndex: next, currentEvent: null };
+      // Only advance if there is another job. Never set gameOver here.
+      if (next < state.jobs.length) {
+        return { ...nextState, currentJobIndex: next, currentEvent: null };
+      }
+      // Already at last job: keep current index, only apply penalty and log.
+      return { ...nextState, currentEvent: null };
     }
 
     default:
       return state;
   }
+}
+
+// helper to create a fresh initial state (so RESTART shuffles a new deck)
+function createInitialState() {
+  return {
+    jobs: jobsData,
+    skills: skillsData,
+    events: eventsData,
+    currentJobIndex: 0,
+    currentEvent: null,
+    skillCooldowns: {},
+    turn: 0,
+    gameOver: false,
+    score: 0,
+    jobsCleared: 0,
+    logs: [],
+    hand: [],
+    deck: shuffle(skillsData.flatMap((s) => new Array(3).fill(s.id))),
+    discard: [],
+    nextInstanceId: 1,
+  };
 }
 
 // --- Context Setup ---
@@ -250,6 +354,7 @@ export function GameProvider({ children }) {
   const tickCooldowns = () => dispatch({ type: "TICK_COOLDOWNS" });
   const triggerEvent = (event) => dispatch({ type: "TRIGGER_EVENT", payload: event });
   const endGame = () => dispatch({ type: "END_GAME" });
+  const restartGame = () => dispatch({ type: "RESTART" });
   const drawCards = (count = 1) => dispatch({ type: "DRAW", payload: { count } });
   const discardCard = (instanceId) => dispatch({ type: "DISCARD_CARD", payload: { instanceId } });
 
@@ -262,6 +367,7 @@ export function GameProvider({ children }) {
           tickCooldowns,
           triggerEvent,
           endGame,
+    restartGame,
           drawCards,
           discardCard,
           dispatch,

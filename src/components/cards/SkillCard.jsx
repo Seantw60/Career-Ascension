@@ -1,5 +1,5 @@
 // src/components/cards/SkillCard.jsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Tooltip from "../ui/Tooltip";
 import "./styles/SkillCard.css";
@@ -19,13 +19,26 @@ export default function SkillCard({
   };
 
   const [showTooltip, setShowTooltip] = useState(false);
+  const ref = useRef(null);
+
+  const getTooltipStyle = () => {
+    if (!ref.current) return {};
+    const rect = ref.current.getBoundingClientRect();
+    // place tooltip centered above the card with some offset
+    return {
+      position: 'absolute',
+      left: `${rect.left + rect.width / 2}px`,
+      top: `${rect.top - 8}px`,
+      transform: 'translate(-50%, -100%)',
+    };
+  };
 
   return (
     <motion.div
       className={`skill-card ${cooldown > 0 ? "cooldown" : ""}`}
       whileHover={{ y: -10, scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onClick={handleUse}
+  onClick={handleUse}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -35,13 +48,14 @@ export default function SkillCard({
       onMouseLeave={() => setShowTooltip(false)}
       onFocus={() => setShowTooltip(true)}
       onBlur={() => setShowTooltip(false)}
+      ref={ref}
     >
       <h4>{name}</h4>
       <p>Power: {power}</p>
       <p>Uses: {points}</p>
       {cooldown > 0 && <p>Cooldown: {cooldown}s</p>}
 
-      <Tooltip visible={showTooltip} id={`tooltip-${skillId}`}>
+      <Tooltip visible={showTooltip} id={`tooltip-${skillId}`} usePortal={true} positionStyle={getTooltipStyle()}>
         {description}
       </Tooltip>
     </motion.div>

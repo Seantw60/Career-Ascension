@@ -69,6 +69,28 @@
   gap: 25px;
 }
 
+/* Make the stack a positioned container so event can be absolutely placed on top */
+.job-event-stack {
+  position: relative;
+}
+
+/* Position EventCard above the JobCard without pushing it */
+.job-event-stack .event-card {
+  position: absolute;
+  top: -60px; /* lift the event above the job card */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  margin: 0; /* remove default spacing from flex layout */
+}
+
+/* Ensure JobCard sits below the EventCard */
+.job-event-stack .job-card,
+.job-event-stack > div > .job-card {
+  z-index: 10;
+  position: relative;
+}
+
 /* ---------- SIDEBAR (TIMER + SCOREBOARD) ---------- */
 .sidebar-area {
   grid-area: sidebar;
