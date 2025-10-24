@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import StartMenu from "./components/menu/StartMenu";
 import OptionsMenu from "./components/menu/OptionsMenu";
-import PlayField from "./components/layout/Playfield";
+import PlayField from "./components/layout/PlayField";
 import "./App.css";
 
 export default function App() {
