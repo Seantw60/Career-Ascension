@@ -23,19 +23,19 @@ export const skillsData = [
 
 export const jobsData = [
   // Entry-Level (low to high HP)
-  { id: 0, title: "UX Designer", hp: 7, maxHp: 7, tier: "Entry-Level", skills: ["Communication", "Teamwork", "Excel"] },
-  { id: 1, title: "Data Analyst", hp: 8, maxHp: 8, tier: "Entry-Level", skills: ["Python", "Excel", "Communication"], description: "Collects and analyzes data to inform business decisions." },
+  { id: 0, title: "UX Designer", hp: 7, maxHp: 7, tier: "Entry-Level", skills: ["Communication", "Teamwork", "React"] },
+  { id: 1, title: "Data Analyst", hp: 8, maxHp: 8, tier: "Entry-Level", skills: ["SQL", "Excel", "Data Visualization"], description: "Collects and analyzes data to inform business decisions." },
 
   // Junior (low to high HP)
-  { id: 2, title: "QA Engineer", hp: 7, maxHp: 7, tier: "Junior", skills: ["Teamwork", "Excel", "Communication"], description: "Tests software to ensure quality and reliability." },
-  { id: 3, title: "Business Analyst", hp: 9, maxHp: 9, tier: "Junior", skills: ["Excel", "Communication", "SQL"], description: "Translates business needs into technical requirements." },
+  { id: 2, title: "QA Engineer", hp: 7, maxHp: 7, tier: "Junior", skills: ["Teamwork", "Time Management", "Communication"], description: "Tests software to ensure quality and reliability." },
+  { id: 3, title: "Business Analyst", hp: 9, maxHp: 9, tier: "Junior", skills: ["Presentation", "Problem Solving", "SQL"], description: "Translates business needs into technical requirements." },
 
   // Intermediate (low to high HP)
-  { id: 4, title: "Marketing Specialist", hp: 6, maxHp: 6, tier: "Intermediate", skills: ["Communication", "Teamwork", "Excel"], description: "Creates campaigns that engage customers and drive growth." },
-  { id: 5, title: "Product Manager", hp: 8, maxHp: 8, tier: "Intermediate", skills: ["Communication", "Teamwork", "Excel"], description: "Defines product vision and coordinates cross-functional teams." },
+  { id: 4, title: "Marketing Specialist", hp: 6, maxHp: 6, tier: "Intermediate", skills: ["Leadership", "Teamwork", "Excel"], description: "Creates campaigns that engage customers and drive growth." },
+  { id: 5, title: "Product Manager", hp: 8, maxHp: 8, tier: "Intermediate", skills: ["Data Visualization", "Problem Solving", "Excel"], description: "Defines product vision and coordinates cross-functional teams." },
 
   // Mid-Level (low to high HP)
-  { id: 6, title: "Software Engineer", hp: 10, maxHp: 10, tier: "Mid-Level", skills: ["Python", "SQL", "Teamwork"], description: "Designs and builds software features and services." },
+  { id: 6, title: "Software Engineer", hp: 10, maxHp: 10, tier: "Mid-Level", skills: ["Python", "JavaScript", "Git"], description: "Designs and builds software features and services." },
   { id: 7, title: "DevOps Engineer", hp: 11, maxHp: 11, tier: "Mid-Level", skills: ["Python", "SQL", "Teamwork"], description: "Maintains infrastructure and deployment pipelines." },
 
   // Senior (low to high HP)
