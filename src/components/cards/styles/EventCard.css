@@ -2,6 +2,8 @@
   width: 180px;
   height: 220px;
   background: linear-gradient(145deg, #8d99ae, #2b2d42);
+  background-image: url(../../../assets/eventcard-bg.png);
+  background-size: cover;
   border: 2px solid #fff;
   border-radius: 12px;
   color: white;
@@ -12,7 +14,6 @@
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin: 0;
 }
 
 .event-card:hover {

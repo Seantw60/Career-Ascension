@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(180deg, #2b2d42, #1a1c2c); /* default (dark) */
+  background-color: linear-gradient(180deg, #2b2d42, #1a1c2c);
   color: white;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   position: relative;
@@ -77,7 +77,8 @@ body.theme-light .menu-btn:hover {
 /* Dark Theme */
 body.theme-dark .start-menu {
   background: linear-gradient(180deg, #2b2d42, #1a1c2c);
-  color: white;
+  /* background-image: url(../../assets/cardback-bg.png); background-size: cover; opacity: 0.1; */
+  color: 180deg, #2b2d42, #1a1c2c;
 }
 body.theme-dark .menu-btn {
   border: 2px solid white;

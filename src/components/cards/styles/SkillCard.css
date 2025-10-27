@@ -2,6 +2,8 @@
   width: 120px;
   height: 160px;
   background: rgba(255, 255, 255, 0.08);
+  background-image: url(../../../assets/skillcard-bg.png);
+  background-size: cover;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   color: white;

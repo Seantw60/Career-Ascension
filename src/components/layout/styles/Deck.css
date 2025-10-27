@@ -29,6 +29,8 @@
     #555 10px,
     #555 20px
   );
+  background-image: url(../../../assets/cardback-bg.png);
+  background-size: cover;
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 6px;
   margin-bottom: 8px;

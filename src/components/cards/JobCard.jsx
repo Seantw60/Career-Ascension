@@ -77,7 +77,7 @@ export default function JobCard({
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}
         >
-          CRITICAL!
+          <title>CRITICAL!</title>
         </motion.div>
       }
     </AnimatePresence>

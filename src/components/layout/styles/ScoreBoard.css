@@ -1,7 +1,8 @@
 .scoreboard {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
+  margin-top: -20px;
   padding: 15px;
   text-align: center;
-  color: #fff;
+  color: #fff;;
 }
