@@ -1,9 +1,9 @@
-🎴 Career Ascension
+# 🎴 Career Ascension
 
-Career Ascension is a card-based career simulation game built with React + Vite.
+### Career Ascension is a card-based career simulation game built with React + Vite.
 Players progress through different job levels by using their skills strategically to defeat "Job Cards" (enemies), while managing limited resources, random events, and time constraints.
 
-🚀 Features
+# 🚀 Features
 
 Card-Based Combat System
 
@@ -17,9 +17,9 @@ Randomized Events
 
 Positive and negative career events (training, networking, interviews, etc.) affect the player’s deck and progress.
 
-Career Progression
+## Career Progression
 
-Jobs are categorized into levels:
+### Jobs are categorized into levels:
 
 Entry-Level
 
@@ -31,7 +31,7 @@ Management
 
 Executive / Senior Management
 
-Game Systems
+## Game Systems
 
 Timer for each job encounter (fail if time runs out).
 
@@ -41,7 +41,7 @@ Score system for successful/failed jobs.
 
 Game Over triggers if all cards are exhausted.
 
-Menus
+## Menus
 
 Start Menu (Play, Settings, Quit).
 
@@ -49,21 +49,23 @@ Options Menu (Audio, Theme, customizable settings).
 
 Game Over screen with restart option.
 
-🏗️ Tech Stack
+# 🏗️ Tech Stack
 
-React
+### React
  — UI library
 
-Vite
+### Vite
  — fast build tool & dev server
 
-Framer Motion
+### Framer Motion
  — animations
 
 
 CSS Modules (or plain CSS) — styling
 
-📂 Project Structure
+
+# 📂 Project Structure
+```
 src/
 ├── assets/             # images, icons, sounds
 ├── components/         
@@ -76,17 +78,17 @@ src/
 ├── App.jsx             # root component
 ├── App.css             # global styles
 └── main.jsx            # entry point
-
-⚙️ Getting Started
+```
+# ⚙️ Getting Started
 
 Clone the repository and install dependencies:
-
+```bash
 git clone <repo-url>
 cd career-ascension
 npm install
 npm run dev
-
-🎮 How to Play
+```
+# 🎮 How to Play
 
 Start a new game from the Start Menu.
 
@@ -100,7 +102,7 @@ Random Events may help or hinder your progress.
 
 Climb the career ladder from Entry-Level to Executive!
 
-🛠️ Development Notes
+# 🛠️ Development Notes
 
 Modular component design (easy to extend with new cards, jobs, or events).
 
@@ -110,9 +112,9 @@ Settings saved via browser local storage.
 
 Future improvements may include difficulty modes, additional event types, and sound effects.
 
-📜 License
+# 📜 License
 
-This project is for educational and personal use.
+### This project is for educational and personal use.
 Feel free to fork and modify for your own projects.
 
 
