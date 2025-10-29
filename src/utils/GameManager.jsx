@@ -27,6 +27,39 @@ const initialState = {
   nextInstanceId: 1,
 };
 
+function ensureCriticalCard(hand, deck, discard, skills, job) {
+  const jobSkills = job?.skills || [];
+  const hasCritical = hand.some((c) => {
+    const def = skills.find((s) => s.id === c.id);
+    return jobSkills.includes(def?.name);
+  });
+
+  if (hasCritical) return { hand, deck, discard };
+
+  const availableCriticals = [...deck, ...discard].filter((id) => {
+    const def = skills.find((s) => s.id === id);
+    return jobSkills.includes(def?.name);
+  });
+
+  if (availableCriticals.length === 0) return { hand, deck, discard };
+
+  const forcedSkillId = availableCriticals.shift();
+  const skillDef = skills.find((s) => s.id === forcedSkillId);
+  const uses = skillDef ? Math.max(0, skillDef.points) : 1;
+
+  // Replace a random card in the hand
+  const replaceIndex = Math.floor(Math.random() * hand.length);
+  const replaced = hand[replaceIndex];
+  if (replaced) discard.push(replaced.id);
+  hand[replaceIndex] = { instanceId: hand[replaceIndex]?.instanceId || Date.now(), id: forcedSkillId, uses };
+
+  // Remove the injected card from deck/discard
+  deck = deck.filter((id) => id !== forcedSkillId);
+  discard = discard.filter((id) => id !== forcedSkillId);
+
+  return { hand, deck, discard };
+}
+
 // --- Reducer ---
 function gameReducer(state, action) {
   switch (action.type) {
@@ -148,181 +181,206 @@ function gameReducer(state, action) {
       return { ...state, currentJobIndex: next, currentEvent: null };
     }
 
-    case "DRAW": {
-      const count = action.payload?.count || 1;
-      let deck = [...state.deck];
-      let hand = [...state.hand];
-      let discard = [...state.discard];
-      let nextInstanceId = state.nextInstanceId;
-      const handLimit = 5;
+case "DRAW": {
+  const count = action.payload?.count || 1;
+  let deck = [...state.deck];
+  let hand = [...state.hand];
+  let discard = [...state.discard];
+  let nextInstanceId = state.nextInstanceId;
+  const handLimit = 5;
+  const job = state.jobs[state.currentJobIndex];
 
-      for (let i = 0; i < count; i++) {
-        if (hand.length >= handLimit) break;
-        if (deck.length === 0 && discard.length > 0) {
-          deck = shuffle(discard);
-          discard = [];
-        }
-        if (deck.length === 0) break;
-        // prefer drawing a card not already in hand
-        const handIds = hand.map((h) => h.id);
-        let pickIndex = deck.findIndex((id) => !handIds.includes(id));
-        let cardId;
-        if (pickIndex === -1) cardId = deck.shift();
-        else cardId = deck.splice(pickIndex, 1)[0];
-        // find default points for this skill
-        const skillDef = state.skills.find((s) => s.id === cardId);
-        const uses = skillDef ? Math.max(0, skillDef.points) : 1;
-        hand.push({ instanceId: nextInstanceId++, id: cardId, uses });
-      }
-
-      return { ...state, deck, hand, discard, nextInstanceId };
+  for (let i = 0; i < count; i++) {
+    if (hand.length >= handLimit) break;
+    if (deck.length === 0 && discard.length > 0) {
+      deck = shuffle(discard);
+      discard = [];
     }
+    if (deck.length === 0) break;
 
-    case "DISCARD_CARD": {
-      const { instanceId } = action.payload;
-      const hand = [...state.hand];
-      const idx = hand.findIndex((c) => c.instanceId === instanceId);
-      if (idx === -1) return state;
-      const [removed] = hand.splice(idx, 1);
-      const discard = [...state.discard, removed.id];
-      return { ...state, hand, discard };
-    }
+    // Prefer drawing a card not already in hand
+    const handIds = hand.map((h) => h.id);
+    let pickIndex = deck.findIndex((id) => !handIds.includes(id));
+    let cardId;
+    if (pickIndex === -1) cardId = deck.shift();
+    else cardId = deck.splice(pickIndex, 1)[0];
 
-    case "TICK_COOLDOWNS": {
-      const updated = Object.fromEntries(
-        Object.entries(state.skillCooldowns).map(([id, c]) => [id, Math.max(0, c - 1)])
-      );
-      return { ...state, skillCooldowns: updated };
-    }
-
-    case "TRIGGER_EVENT": {
-      const event = action.payload;
-      // apply simple event effects synchronously
-      let newState = { ...state, currentEvent: event, logs: [...state.logs, `Event: ${event.title}`].slice(-50) };
-
-      const applyEffect = (effect) => {
-        switch (effect) {
-          case "drawSkill": {
-            // draw one card into hand (respecting hand limit); reshuffle discard if needed
-            let deck = [...newState.deck];
-            let discard = [...newState.discard];
-            let hand = [...newState.hand];
-            let nextInstanceId = newState.nextInstanceId;
-            const handLimit = 5;
-            if (hand.length < handLimit) {
-              if (deck.length === 0 && discard.length > 0) {
-                deck = shuffle(discard);
-                discard = [];
-              }
-              if (deck.length > 0) {
-                  // prefer a card not already in hand
-                  const handIds = hand.map((h) => h.id);
-                  let pickIndex = deck.findIndex((id) => !handIds.includes(id));
-                  let cardId;
-                  if (pickIndex === -1) cardId = deck.shift();
-                  else cardId = deck.splice(pickIndex, 1)[0];
-                const skillDef = newState.skills.find((s) => s.id === cardId);
-                const uses = skillDef ? Math.max(0, skillDef.points) : 1;
-                hand.push({ instanceId: nextInstanceId++, id: cardId, uses });
-                newState = {
-                  ...newState,
-                  deck,
-                  discard,
-                  hand,
-                  nextInstanceId,
-                  logs: [...newState.logs, `Event drew ${skillDef ? skillDef.name : cardId}`].slice(-50),
-                };
-              }
-            }
-            break;
-          }
-          case "swapSkill": {
-            // swap a random hand instance with the top of deck (if possible)
-            let deck = [...newState.deck];
-            let hand = [...newState.hand];
-            let discard = [...newState.discard];
-            if (hand.length > 0 && (deck.length > 0 || discard.length > 0)) {
-              if (deck.length === 0 && discard.length > 0) {
-                deck = shuffle(discard);
-                discard = [];
-              }
-              if (deck.length > 0) {
-                const handIdx = Math.floor(Math.random() * hand.length);
-                const newCardId = deck.shift();
-                const old = hand[handIdx];
-                // put old card into discard and replace with new instance
-                discard.push(old.id);
-                const skillDef = newState.skills.find((s) => s.id === newCardId);
-                const uses = skillDef ? Math.max(0, skillDef.points) : 1;
-                hand[handIdx] = { instanceId: newState.nextInstanceId, id: newCardId, uses };
-                newState = {
-                  ...newState,
-                  deck,
-                  discard,
-                  hand,
-                  nextInstanceId: newState.nextInstanceId + 1,
-                  logs: [...newState.logs, `Event swapped a card in hand`].slice(-50),
-                };
-              }
-            }
-            break;
-          }
-          case "loseSkill": {
-            const idx = Math.floor(Math.random() * newState.skills.length);
-            const target = newState.skills[idx];
-            newState = {
-              ...newState,
-              skills: newState.skills.map((s, i) => (i === idx ? { ...s, points: Math.max(0, s.points - 1) } : s)),
-              logs: [...newState.logs, `Lost 1 point from ${target.name}`].slice(-50),
-            };
-            break;
-          }
-          case "healSkillPoints": {
-            newState = {
-              ...newState,
-              skills: newState.skills.map((s) => ({ ...s, points: s.points + 1 })),
-              logs: [...newState.logs, `Restored 1 point to all skills`].slice(-50),
-            };
-            break;
-          }
-          default:
-            break;
-        }
-      };
-
-      if (event?.effect) applyEffect(event.effect);
-
-      return newState;
-    }
-
-    case "END_GAME":
-      return { ...state, gameOver: true };
-
-    case "RESTART":
-      return createInitialState();
-
-    case "TIMEOUT": {
-      // player failed the current job due to timeout -> deduct points, advance to next job and add a log
-      const current = state.jobs[state.currentJobIndex];
-      const log = current ? `Timed out on ${current.title}` : `Timed out`;
-      const penalty = 5; // points lost on timeout
-      const next = state.currentJobIndex + 1;
-      const nextState = { ...state, score: Math.max(0, state.score - penalty), logs: [...state.logs, log, `- ${penalty} points`].slice(-50) };
-      // Only advance if there is another job. Never set gameOver here.
-      if (next < state.jobs.length) {
-        return { ...nextState, currentJobIndex: next, currentEvent: null };
-      }
-      // Already at last job: keep current index, only apply penalty and log.
-      return { ...nextState, currentEvent: null };
-    }
-
-    default:
-      return state;
+    const skillDef = state.skills.find((s) => s.id === cardId);
+    const uses = skillDef ? Math.max(0, skillDef.points) : 1;
+    hand.push({ instanceId: nextInstanceId++, id: cardId, uses });
   }
+
+  // ✅ Guarantee at least one critical card in the hand
+  ({ hand, deck, discard } = ensureCriticalCard(hand, deck, discard, state.skills, job));
+
+  return { ...state, deck, hand, discard, nextInstanceId };
+}
+
+
+
+case "DISCARD_CARD": {
+  const { instanceId } = action.payload;
+  const hand = [...state.hand];
+  const idx = hand.findIndex((c) => c.instanceId === instanceId);
+  if (idx === -1) return state;
+  const [removed] = hand.splice(idx, 1);
+  const discard = [...state.discard, removed.id];
+  return { ...state, hand, discard };
+}
+
+case "TICK_COOLDOWNS": {
+  const updated = Object.fromEntries(
+    Object.entries(state.skillCooldowns).map(([id, c]) => [id, Math.max(0, c - 1)])
+  );
+  return { ...state, skillCooldowns: updated };
+}
+
+case "TRIGGER_EVENT": {
+  const event = action.payload;
+  // apply simple event effects synchronously
+  let newState = { ...state, currentEvent: event, logs: [...state.logs, `Event: ${event.title}`].slice(-50) };
+
+  const applyEffect = (effect) => {
+    switch (effect) {
+      case "drawSkill": {
+        // draw one card into hand (respecting hand limit); reshuffle discard if needed
+        let deck = [...newState.deck];
+        let discard = [...newState.discard];
+        let hand = [...newState.hand];
+        let nextInstanceId = newState.nextInstanceId;
+        const handLimit = 5;
+        if (hand.length < handLimit) {
+          if (deck.length === 0 && discard.length > 0) {
+            deck = shuffle(discard);
+            discard = [];
+          }
+          if (deck.length > 0) {
+              // prefer a card not already in hand
+              const handIds = hand.map((h) => h.id);
+              let pickIndex = deck.findIndex((id) => !handIds.includes(id));
+              let cardId;
+              if (pickIndex === -1) cardId = deck.shift();
+              else cardId = deck.splice(pickIndex, 1)[0];
+            const skillDef = newState.skills.find((s) => s.id === cardId);
+            const uses = skillDef ? Math.max(0, skillDef.points) : 1;
+            hand.push({ instanceId: nextInstanceId++, id: cardId, uses });
+            newState = {
+              ...newState,
+              deck,
+              discard,
+              hand,
+              nextInstanceId,
+              logs: [...newState.logs, `Event drew ${skillDef ? skillDef.name : cardId}`].slice(-50),
+            };
+          }
+        }
+        break;
+      }
+      case "swapSkill": {
+        // swap a random hand instance with the top of deck (if possible)
+        let deck = [...newState.deck];
+        let hand = [...newState.hand];
+        let discard = [...newState.discard];
+        if (hand.length > 0 && (deck.length > 0 || discard.length > 0)) {
+          if (deck.length === 0 && discard.length > 0) {
+            deck = shuffle(discard);
+            discard = [];
+          }
+          if (deck.length > 0) {
+            const handIdx = Math.floor(Math.random() * hand.length);
+            const newCardId = deck.shift();
+            const old = hand[handIdx];
+            // put old card into discard and replace with new instance
+            discard.push(old.id);
+            const skillDef = newState.skills.find((s) => s.id === newCardId);
+            const uses = skillDef ? Math.max(0, skillDef.points) : 1;
+            hand[handIdx] = { instanceId: newState.nextInstanceId, id: newCardId, uses };
+            newState = {
+              ...newState,
+              deck,
+              discard,
+              hand,
+              nextInstanceId: newState.nextInstanceId + 1,
+              logs: [...newState.logs, `Event swapped a card in hand`].slice(-50),
+            };
+          }
+        }
+        break;
+      }
+      case "loseSkill": {
+        const idx = Math.floor(Math.random() * newState.skills.length);
+        const target = newState.skills[idx];
+        newState = {
+          ...newState,
+          skills: newState.skills.map((s, i) => (i === idx ? { ...s, points: Math.max(0, s.points - 1) } : s)),
+          logs: [...newState.logs, `Lost 1 point from ${target.name}`].slice(-50),
+        };
+        break;
+      }
+      case "healSkillPoints": {
+        newState = {
+          ...newState,
+          skills: newState.skills.map((s) => ({ ...s, points: s.points + 1 })),
+          logs: [...newState.logs, `Restored 1 point to all skills`].slice(-50),
+        };
+        break;
+      }
+      default:
+        break;
+    }
+  };
+
+  if (event?.effect) applyEffect(event.effect);
+
+  return newState;
+}
+
+case "END_GAME":
+  return { ...state, gameOver: true };
+
+case "RESTART":
+  return createInitialState();
+
+case "TIMEOUT": {
+  // player failed the current job due to timeout -> deduct points, advance to next job and add a log
+  const current = state.jobs[state.currentJobIndex];
+  const log = current ? `Timed out on ${current.title}` : `Timed out`;
+  const penalty = 5; // points lost on timeout
+  const next = state.currentJobIndex + 1;
+  const nextState = { ...state, score: Math.max(0, state.score - penalty), logs: [...state.logs, log, `- ${penalty} points`].slice(-50) };
+  // Only advance if there is another job. Never set gameOver here.
+  if (next < state.jobs.length) {
+    return { ...nextState, currentJobIndex: next, currentEvent: null };
+  }
+  // Already at last job: keep current index, only apply penalty and log.
+  return { ...nextState, currentEvent: null };
+}
+
+default:
+  return state;
+}
 }
 
 // helper to create a fresh initial state (so RESTART shuffles a new deck)
 function createInitialState() {
+  let deck = shuffle(skillsData.flatMap((s) => new Array(3).fill(s.id)));
+  let discard = [];
+  let hand = [];
+  let nextInstanceId = 1;
+
+  // Draw 5 cards initially
+  for (let i = 0; i < 5; i++) {
+    if (deck.length === 0) break;
+    const cardId = deck.shift();
+    const skillDef = skillsData.find((s) => s.id === cardId);
+    const uses = skillDef ? Math.max(0, skillDef.points) : 1;
+    hand.push({ instanceId: nextInstanceId++, id: cardId, uses });
+  }
+
+  // ✅ Ensure one card matches the first job's required skills
+  const firstJob = jobsData[0];
+  ({ hand, deck, discard } = ensureCriticalCard(hand, deck, discard, skillsData, firstJob));
+
   return {
     jobs: jobsData,
     skills: skillsData,
@@ -335,12 +393,13 @@ function createInitialState() {
     score: 0,
     jobsCleared: 0,
     logs: [],
-    hand: [],
-    deck: shuffle(skillsData.flatMap((s) => new Array(3).fill(s.id))),
-    discard: [],
-    nextInstanceId: 1,
+    hand,
+    deck,
+    discard,
+    nextInstanceId,
   };
 }
+
 
 // --- Context Setup ---
 const GameContext = createContext();
@@ -367,7 +426,7 @@ export function GameProvider({ children }) {
           tickCooldowns,
           triggerEvent,
           endGame,
-    restartGame,
+          restartGame,
           drawCards,
           discardCard,
           dispatch,

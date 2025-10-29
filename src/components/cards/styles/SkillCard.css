@@ -1,11 +1,11 @@
 .skill-card {
-  width: 120px;
+  width: 110px;
   height: 160px;
   background: rgba(255, 255, 255, 0.08);
   background-image: url(../../../assets/skillcard-bg.png);
   background-size: cover;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
   color: white;
   text-align: center;
   padding: 12px;
@@ -13,23 +13,36 @@
   flex-direction: column;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease;
   position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.skill-card:active {
+  transform: translateY(-8px) scale(1.02);
 }
 
 .skill-card h4 {
-  font-size: 1rem;
-  margin-bottom: 8px;
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
 }
 
 .skill-card p {
-  font-size: 0.85rem;
-  opacity: 0.85;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin: 4px 0;
+  font-weight: 600;
 }
 
 .skill-card:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: white;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
 }
 
 .skill-tooltip {
@@ -57,4 +70,98 @@
   border-width: 6px 6px 0 6px;
   border-style: solid;
   border-color: rgba(20, 20, 30, 0.95) transparent transparent transparent;
+}
+
+.skill-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.skill-card:hover::before {
+  opacity: 1;
+}
+
+.skill-card.used {
+  filter: grayscale(80%);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.skill-card.used:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.skill-card.used .skill-tooltip {
+  display: none;
+}
+
+.skill-card.used::before {
+  display: none;
+}
+
+/* ===== THEME OVERRIDES ===== */
+
+/* Light Theme */
+body.theme-light .skill-card {
+  background: linear-gradient(135deg, #ffffff, #e3f2fd);
+  border: 3px solid #2196f3;
+  color: #0d47a1;
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.3);
+}
+
+body.theme-light .skill-card:hover {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-color: #1976d2;
+  box-shadow: 0 12px 28px rgba(33, 150, 243, 0.5);
+}
+
+body.theme-light .skill-card h4 {
+  color: #0d47a1;
+  text-shadow: 0 1px 2px rgba(13, 71, 161, 0.2);
+}
+
+body.theme-light .skill-card p {
+  color: #1565c0;
+}
+
+
+/* Retro Theme */
+body.theme-retro .skill-card {
+  background: linear-gradient(135deg, #1a1a1a, #000);
+  border: 4px solid #00ff00;
+  color: #ffff00;
+  box-shadow: 0 0 20px #00ff00, 0 6px 16px rgba(0, 0, 0, 0.8);
+  font-family: "Courier New", monospace;
+  border-radius: 0;
+}
+
+body.theme-retro .skill-card:hover {
+  background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+  border-color: #00ff00;
+  box-shadow: 0 0 30px #00ff00, 0 12px 28px rgba(0, 255, 0, 0.4);
+  transform: translateY(-10px) scale(1.08);
+}
+
+body.theme-retro .skill-card h4 {
+  color: #ffff00;
+  text-shadow: 2px 2px 0 #ff00ff, 0 0 15px #00ff00;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+body.theme-retro .skill-card p {
+  color: #00ffff;
+  text-shadow: 1px 1px 0 #000, 0 0 10px #00ffff;
+  font-weight: 700;
 }

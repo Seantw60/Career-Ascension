@@ -4,7 +4,7 @@ import App from "./App.jsx";
 import { GameProvider } from "./utils/GameManager";
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById("root")).render( // Entry Point
   <React.StrictMode>
     <GameProvider>
       <App />

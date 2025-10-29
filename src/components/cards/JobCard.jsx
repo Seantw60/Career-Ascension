@@ -72,7 +72,7 @@ export default function JobCard({
         <motion.div
           key="critical-flare"
           className="critical-flare"
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.8, opacity: 10 }}
           animate={{ scale: [1.2, 1], opacity: [1, 0] }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}

@@ -22,6 +22,10 @@
 
 .game-title {
   font-size: 3rem;
+  font-style: oblique;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  text-shadow: #111 2px 2px 4px;
+  text-rendering: optimizeSpeed;
   font-weight: bold;
   text-align: center;
   letter-spacing: 2px;
@@ -39,7 +43,7 @@
   border-radius: 8px;
   border: 2px solid white;
   background: transparent;
-  color: white;
+  color: maroon;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
@@ -77,7 +81,7 @@ body.theme-light .menu-btn:hover {
 /* Dark Theme */
 body.theme-dark .start-menu {
   background: linear-gradient(180deg, #2b2d42, #1a1c2c);
-  /* background-image: url(../../assets/cardback-bg.png); background-size: cover; opacity: 0.1; */
+  background-image: url(../../assets/menu-bg.png); background-size: cover;
   color: 180deg, #2b2d42, #1a1c2c;
 }
 body.theme-dark .menu-btn {

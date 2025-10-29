@@ -10,6 +10,13 @@ export default function App() {
   const [screen, setScreen] = useState("menu"); // menu | settings | play | quit
   const [showTutorial, setShowTutorial] = useState(false);
 
+  // Initialize audio state
+  const [audio, setAudio] = useState({
+    master: 50,
+    music: 50,
+    sfx: 50
+  });
+
   // Initialize theme state
   const [theme, setTheme] = useState(() => {
     try {
@@ -24,6 +31,12 @@ export default function App() {
     return "dark";
   });
 
+  // Apply theme to document body immediately on mount and when theme changes
+  useEffect(() => {
+    document.body.className = "";
+    document.body.classList.add(`theme-${theme}`);
+  }, [theme]);
+
   // Save theme to localStorage
   useEffect(() => {
     const settingsToSave = { theme };
@@ -32,12 +45,6 @@ export default function App() {
     } catch (e) {
       console.error("Could not save settings to localStorage", e);
     }
-  }, [theme]);
-
-  // Apply theme to document body
-  useEffect(() => {
-    document.body.className = "";
-    document.body.classList.add(`theme-${theme}`);
   }, [theme]);
 
   // Check if tutorial should be shown when entering play screen
@@ -70,10 +77,11 @@ export default function App() {
     localStorage.removeItem("tutorialSeen");
     alert("Tutorial reset! It will show again next time you play.");
   };
-
-  return (
+  
+  // Render different screens based on current state
+  return ( 
     <>
-      {screen === "menu" && (
+      {screen === "menu" && ( // Main Menu
         <StartMenu
           onPlay={handlePlayClick}
           onSettings={() => setScreen("settings")}
@@ -81,7 +89,7 @@ export default function App() {
         />
       )}
 
-      {screen === "settings" && (
+      {screen === "settings" && ( // Settings Menu
         <OptionsMenu
           theme={theme}
           setTheme={setTheme}
@@ -89,7 +97,7 @@ export default function App() {
         />
       )}
 
-      {screen === "play" && (
+      {screen === "play" && ( // Play Field
         <>
           <PlayField />
           {showTutorial && (
@@ -101,7 +109,7 @@ export default function App() {
         </>
       )}
 
-      {screen === "quit" && (
+      {screen === "quit" && ( // Quit Screen
         <div className="quit-screen">
           <h2>
             Thanks for playing <span className="highlight">Career Ascension</span>!
