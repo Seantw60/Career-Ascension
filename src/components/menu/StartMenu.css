@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: linear-gradient(180deg, #2b2d42, #1a1c2c);
+  background: linear-gradient(180deg, #2b2d42, #1a1c2c);
   color: white;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   position: relative;
@@ -15,20 +15,22 @@
 .title-box {
   margin-bottom: 40px;
   padding: 20px 40px;
-  border: 2px solid #fff;
+  border: 3px solid rgba(255, 255, 255, 0.8);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(43, 45, 66, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .game-title {
   font-size: 3rem;
-  font-style: oblique;
+  font-style: italic;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  text-shadow: #111 2px 2px 4px;
-  text-rendering: optimizeSpeed;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
   font-weight: bold;
   text-align: center;
   letter-spacing: 2px;
+  color: white;
 }
 
 .menu-buttons {
@@ -41,17 +43,20 @@
   padding: 12px 24px;
   font-size: 1.2rem;
   border-radius: 8px;
-  border: 2px solid white;
-  background: transparent;
-  color: maroon;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(43, 45, 66, 0.7);
+  backdrop-filter: blur(5px);
+  color: white;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .menu-btn:hover {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   color: #1a1c2c;
   transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.3);
 }
 
 .version-box {
@@ -60,6 +65,7 @@
   right: 15px;
   font-size: 0.9rem;
   opacity: 0.7;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* ===== THEME OVERRIDES ===== */
@@ -69,28 +75,72 @@ body.theme-light .start-menu {
   background: linear-gradient(180deg, #fdfdfd, #e0e0e0);
   color: #111;
 }
-body.theme-light .menu-btn {
-  border: 2px solid #111;
-  color: #111;
+
+body.theme-light .title-box {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #2196f3;
+  box-shadow: 0 8px 32px rgba(33, 150, 243, 0.3);
 }
+
+body.theme-light .game-title {
+  color: #0d47a1;
+  text-shadow: 2px 2px 4px rgba(13, 71, 161, 0.2);
+}
+
+body.theme-light .menu-btn {
+  border: 2px solid #2196f3;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0d47a1;
+  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.2);
+}
+
 body.theme-light .menu-btn:hover {
-  background: #111;
-  color: #fff;
+  background: #2196f3;
+  color: white;
+  box-shadow: 0 6px 24px rgba(33, 150, 243, 0.4);
+}
+
+body.theme-light .version-box {
+  color: rgba(0, 0, 0, 0.6);
 }
 
 /* Dark Theme */
 body.theme-dark .start-menu {
   background: linear-gradient(180deg, #2b2d42, #1a1c2c);
-  background-image: url(../../assets/menu-bg.png); background-size: cover;
-  color: 180deg, #2b2d42, #1a1c2c;
-}
-body.theme-dark .menu-btn {
-  border: 2px solid white;
+  background-image: url(../../assets/menu-bg.png);
+  background-size: cover;
+  background-position: center;
   color: white;
 }
+
+body.theme-dark .title-box {
+  background: rgba(43, 45, 66, 0.85);
+  border-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+body.theme-dark .game-title {
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+body.theme-dark .menu-btn {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(43, 45, 66, 0.7);
+  backdrop-filter: blur(5px);
+  color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
 body.theme-dark .menu-btn:hover {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   color: #1a1c2c;
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.3);
+}
+
+body.theme-dark .version-box {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* Retro Theme */
@@ -100,19 +150,42 @@ body.theme-retro .start-menu {
   font-family: "Courier New", monospace;
 }
 
+body.theme-retro .title-box {
+  background: rgba(0, 0, 0, 0.8);
+  border: 4px solid black;
+  box-shadow: 0 0 30px #00ff00;
+}
+
+body.theme-retro .game-title {
+  color: #ffff00;
+  text-shadow: 3px 3px 0 #ff00ff, 0 0 20px #00ff00;
+  text-transform: uppercase;
+}
+
 body.theme-retro .menu-btn {
-  border: 2px solid black;
+  border: 3px solid black;
   background: #d62828;
   color: white;
-  padding: 12px 24px;   
-  font-size: 1.2rem;    
-  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 1.2rem;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  min-width: 120px;     
+  min-width: 120px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
+
 body.theme-retro .menu-btn:hover {
   background: #ba181b;
   color: yellow;
   transform: scale(1.05);
+  box-shadow: 0 0 30px #00ff00;
+}
+
+body.theme-retro .version-box {
+  color: black;
+  font-weight: 700;
 }
