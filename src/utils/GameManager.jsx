@@ -1,5 +1,5 @@
-// src/utils/GameManager.js
-import { createContext, useContext, useReducer } from "react";
+// src/utils/GameManager.jsx
+import { createContext, useContext, useReducer, useState } from "react";
 import { skillsData, jobsData, eventsData } from "../data/data";
 import shuffle from "./shuffle";
 
@@ -174,12 +174,24 @@ function gameReducer(state, action) {
 }
 
 
-    case "NEXT_JOB": {
-      const next = state.currentJobIndex + 1;
-      // If no more jobs, keep current index and clear event (do not trigger gameOver here).
-      if (next >= state.jobs.length) return { ...state, currentEvent: null };
-      return { ...state, currentJobIndex: next, currentEvent: null };
-    }
+case "NEXT_JOB": {
+  const next = state.currentJobIndex + 1;
+
+  // If advancing past last job -> mark run finished and set gameOver
+  if (next >= state.jobs.length) {
+  return {
+  ...state,
+  currentEvent: null,
+  gameOver: true,         // signal UI to show final screen
+  // optionally set currentJobIndex to one past end so currentJob becomes undefined
+  currentJobIndex: state.jobs.length,
+    };
+  }
+
+// otherwise advance to next job
+  return { ...state, currentJobIndex: next, currentEvent: null };
+}
+
 
 case "DRAW": {
   const count = action.payload?.count || 1;
@@ -412,10 +424,13 @@ export function GameProvider({ children }) {
   const nextJob = () => dispatch({ type: "NEXT_JOB" });
   const tickCooldowns = () => dispatch({ type: "TICK_COOLDOWNS" });
   const triggerEvent = (event) => dispatch({ type: "TRIGGER_EVENT", payload: event });
-  const endGame = () => dispatch({ type: "END_GAME" });
+  const triggerEndGame = () => dispatch({ type: "END_GAME" });
   const restartGame = () => dispatch({ type: "RESTART" });
   const drawCards = (count = 1) => dispatch({ type: "DRAW", payload: { count } });
   const discardCard = (instanceId) => dispatch({ type: "DISCARD_CARD", payload: { instanceId } });
+  // timeout action
+  const [tutorialActive, setTutorialActive] = useState(false);
+
 
   return (
     <GameContext.Provider
@@ -425,7 +440,9 @@ export function GameProvider({ children }) {
           nextJob,
           tickCooldowns,
           triggerEvent,
-          endGame,
+          triggerEndGame,
+          tutorialActive,
+          setTutorialActive,
           restartGame,
           drawCards,
           discardCard,

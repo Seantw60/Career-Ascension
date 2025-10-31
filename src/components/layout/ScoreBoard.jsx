@@ -12,6 +12,7 @@ export default function ScoreBoard() {
     return Math.floor(jobsCleared / 3) + 1;
   }, [jobsCleared]);
 
+  
   // Optionally show current job tier/name
   const currentJob = jobs.length > 0 ? jobs[Math.min(jobsCleared, jobs.length - 1)] : null;
 

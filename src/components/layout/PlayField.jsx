@@ -24,6 +24,7 @@ export default function PlayField() {
     nextJob,
     tickCooldowns,
     triggerEvent,
+    triggerEndGame,
     gameOver,
     score,
     jobsCleared,
@@ -50,7 +51,12 @@ export default function PlayField() {
     }
   }, [currentJob?.hp]);
 
-  const allCleared = jobsCleared >= jobs.length || currentJobIndex >= jobs.length;
+  // end-of-run conditions
+  const allCleared = currentJobIndex >= jobs.length || jobs.every(job => job.hp <= 0);
+
+  if (allCleared || gameOver) {
+    // show success or final screen
+  }
 
   if (allCleared)
     return (

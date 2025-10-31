@@ -1,21 +1,26 @@
 import { useState, useEffect } from "react";
+import { useGame } from "../../utils/GameManager"; // import context
 import "./styles/Timer.css";
 
 export default function Timer({ duration = 30, onExpire = () => {}, resetKey }) {
   const [timeLeft, setTimeLeft] = useState(duration);
+  const { tutorialActive } = useGame(); // get flag from context
+  
 
   useEffect(() => {
+    if (tutorialActive) return; // 🧊 Pause timer when tutorial is active
     if (timeLeft <= 0) {
-      // call once when expired
-      onExpire();
-      return;
-    }
+        setTimeLeft(0);
+        onExpire();
+        return;
+      }
+
+
     const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearInterval(timer);
-  }, [timeLeft, onExpire]);
+  }, [timeLeft, onExpire, tutorialActive]); // add tutorialActive as dependency
 
   useEffect(() => {
-    // reset when duration prop changes or when resetKey changes (new job)
     setTimeLeft(duration);
   }, [duration]);
 
